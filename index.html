@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Passagem de Turno</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <img class="logo" id="logoTopo" alt="PremieRpet">
+    <span class="div" aria-hidden="true"></span>
+    <h1>Status <b id="turnoLbl">1º turno</b></h1>
+    <div class="meta">
+      <div class="seg" role="group" aria-label="Turno" id="turnoSeg">
+        <button type="button" data-t="1" aria-pressed="true">1º T</button>
+        <button type="button" data-t="2" aria-pressed="false">2º T</button>
+        <button type="button" data-t="3" aria-pressed="false">3º T</button>
+      </div>
+      <label class="chip datechip"><span class="vh">Data do turno</span><input type="date" id="dataTurno"></label>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Seções">
+      <button role="tab" id="t-painel" aria-selected="true" aria-controls="v-painel">Painel</button>
+      <button role="tab" id="t-lanc" aria-selected="false" aria-controls="v-lanc">Lançamento</button>
+      <button role="tab" id="t-sep" aria-selected="false" aria-controls="v-sep">Relatórios</button>
+      <button role="tab" id="t-eq" aria-selected="false" aria-controls="v-eq">Equipe</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= PAINEL: o que vai para o WhatsApp ================= -->
+<section id="v-painel" role="tabpanel" aria-labelledby="t-painel">
+  <div class="foto-bar">
+    <button class="btn" type="button" id="btnSaveAll">Enviar as 3 páginas</button>
+    <button class="btn alt" type="button" id="btnSave1">Página 1</button>
+    <button class="btn alt" type="button" id="btnSave2">Página 2</button>
+    <button class="btn alt" type="button" id="btnSave3">Página 3</button>
+    <span class="save-msg" id="saveMsg">No celular, abre o compartilhamento (WhatsApp). No computador, baixa as imagens.</span>
+  </div>
+  <div id="alerts"></div>
+  <div class="pg-wrap"><span class="pg-cap">Página 1 · VD e VET</span><div class="pg-stage" id="st1"><div class="pg-fit" id="fit1"><div class="pg" id="pg1"></div></div></div></div>
+  <div class="pg-wrap"><span class="pg-cap">Página 2 · Operação, absenteísmo e observações</span><div class="pg-stage" id="st2"><div class="pg-fit" id="fit2"><div class="pg" id="pg2"></div></div></div></div>
+  <div class="pg-wrap"><span class="pg-cap">Página 3 · Produtividade</span><div class="pg-stage" id="st3"><div class="pg-fit" id="fit3"><div class="pg" id="pg3"></div></div></div></div>
+</section>
+
+<!-- ================= LANÇAMENTO ================= -->
+<section id="v-lanc" role="tabpanel" aria-labelledby="t-lanc" hidden>
+  <section class="abs" aria-labelledby="absTitle">
+    <div class="abs-h"><h2 id="absTitle">Absenteísmo do turno</h2></div>
+    <div class="abs-grid">
+      <div>
+        <div class="abs-big"><span class="n num" id="absN">0</span><div class="m" id="absMeta"></div></div>
+        <div class="pbar" id="absBar" role="img" aria-label="Presença da equipe por motivo"></div>
+      </div>
+      <div>
+        <div class="motg" id="absMot"></div>
+        <div class="funcs" id="absFunc"></div>
+      </div>
+      <div class="absf">
+        <label for="absNome">Colaborador</label><select id="absNome"></select>
+        <label for="absMotSel">Motivo</label><select id="absMotSel"></select>
+        <button class="btn" id="absAdd" type="button">Registrar ausência</button>
+        <span class="sub" id="absMsg"></span>
+      </div>
+    </div>
+    <div id="absTable"></div>
+  </section>
+
+  <div class="form-grid" id="formGrid"></div>
+
+  <fieldset class="obs-fs">
+    <legend>Observações do turno</legend>
+    <p class="hint">Recados para o próximo turno. Saem no fim da página 2.</p>
+    <textarea id="obsTxt" aria-label="Observações do turno" placeholder="Ex.: rota 12 aguardando liberação do cliente; empilhadeira 3 em manutenção."></textarea>
+  </fieldset>
+</section>
+
+<!-- ================= RELATÓRIOS ================= -->
+<section id="v-sep" role="tabpanel" aria-labelledby="t-sep" hidden>
+  <div class="up">
+    <div class="up-txt">
+      <h2 id="sepTitle">Relatórios</h2>
+      <p class="hint" style="margin:0">Suba o relatório do WMS em .xlsx ou .csv, com as colunas USUARIO, NOME, NO_PEDIDOS, NO_ITENS, PESO_PICKING e PESO_ONDA. Se for a planilha completa da passagem de turno, também leio a conferência (aba BD_CONFERÊNCIA). Os dados entram no turno e na data selecionados no topo.</p>
+      <div id="sepStatus"></div>
+    </div>
+    <label class="drop up-drop" id="sepDrop" for="sepFile"><input type="file" id="sepFile" accept=".xlsx,.xls,.csv"><span><b>Escolha a planilha</b><br>ou arraste aqui</span></label>
+  </div>
+  <div class="sep-tools">
+    <div class="fchips" id="sepView" role="group" aria-label="Relatório">
+      <button type="button" data-v="sep" aria-pressed="true">Separação</button>
+      <button type="button" data-v="conf" aria-pressed="false">Conferência</button>
+    </div>
+    <button type="button" class="btn zero-btn" id="sepZerar">Zerar separação</button>
+    <span class="sub" id="sepFonteTxt"></span>
+    <input type="search" id="sepBusca" placeholder="Buscar colaborador ou usuário" aria-label="Buscar no relatório">
+  </div>
+  <div class="sep-kpi" id="sepKpi"></div>
+  <div class="tbl-wrap" style="margin-top:12px"><table class="rep" id="sepTbl"></table></div>
+</section>
+
+<!-- ================= EQUIPE ================= -->
+<section id="v-eq" role="tabpanel" aria-labelledby="t-eq" hidden>
+  <div class="eq-turnos" id="eqTurnos" role="group" aria-label="Filtrar por turno"></div>
+
+  <div class="eq-grid">
+    <div class="eq-card">
+      <h3>Importar planilha</h3>
+      <p class="hint">Arquivo .xlsx ou .csv com as colunas <b>Nome</b>, <b>Função</b> e <b>Turno</b> (1, 2 ou 3). A ordem das colunas não importa; aceito também “Colaborador” e “Cargo”.</p>
+      <label class="drop" id="drop" for="eqFile"><input type="file" id="eqFile" accept=".xlsx,.xls,.csv"><span id="dropTxt"><b>Escolha o arquivo</b> ou arraste aqui</span></label>
+      <div id="impPrev"></div>
+      <div class="row-actions">
+        <button class="btn alt" type="button" id="btnModelo">Baixar modelo</button>
+        <button class="btn alt" type="button" id="btnExport">Baixar cadastro atual</button>
+      </div>
+      <span class="sub" id="eqDl"></span>
+    </div>
+    <div class="eq-card">
+      <h3>Incluir colaborador</h3>
+      <div class="add-grid">
+        <label for="nNome">Nome</label><input id="nNome" type="text" placeholder="Nome completo">
+        <label for="nFunc">Função</label><input id="nFunc" type="text" list="funcList" placeholder="Ex.: Conferente I">
+        <label for="nTurno">Turno</label><select id="nTurno"><option value="1">1º turno</option><option value="2">2º turno</option><option value="3">3º turno</option></select>
+      </div>
+      <div class="row-actions"><button class="btn" type="button" id="btnAddPes">Incluir</button><span class="sub" id="addMsg"></span></div>
+      <datalist id="funcList"></datalist>
+    </div>
+  </div>
+
+  <div class="eq-card" style="margin-top:16px">
+    <div class="eq-tools">
+      <span class="lbl" id="eqFiltroTxt">Todos os turnos</span>
+      <input type="search" id="eqBusca" placeholder="Buscar nome ou função" aria-label="Buscar colaborador">
+    </div>
+    <div class="tbl-wrap" style="margin-top:12px"><table class="eq-tbl"><thead><tr><th>Nome</th><th>Função</th><th>Turno</th><th></th></tr></thead><tbody id="eqBody"></tbody></table></div>
+  </div>
+</section>
+
+<!-- ================= APOIO (pop-up) ================= -->
+<div class="modal" id="apoio" hidden><div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="apoioT"><div class="modal-h"><h2 id="apoioT">Apoio</h2><button type="button" class="modal-x" id="apoioX">Fechar</button></div><div class="modal-b">
+  <h3 class="ap-h">Rotina do turno</h3>
+  <ol class="ap-steps">
+    <li><b>Topo:</b> escolha o turno e confira a data.</li>
+    <li><b>Relatórios:</b> suba a planilha do WMS (separação e, se houver, conferência).</li>
+    <li><b>Lançamento:</b> registre as ausências e preencha os campos manuais. Escreva os recados nas observações.</li>
+    <li><b>Painel:</b> revise os pontos de atenção e toque em “Enviar as 3 páginas”.</li>
+  </ol>
+  <h3 class="ap-h">Onde ficou cada controle da planilha antiga</h3>
+  <div class="tbl-wrap">
+    <table class="cmp">
+      <thead><tr><th>Planilha antiga</th><th>No site</th></tr></thead>
+      <tbody>
+        <tr><td>BD_SEPARAÇÃO e tabela dinâmica</td><td>Relatórios › Separação (sobe o arquivo do WMS; totais calculados)</td></tr>
+        <tr><td>BD_CONFERÊNCIA e tabela dinâmica</td><td>Relatórios › Conferência</td></tr>
+        <tr><td>Base_de_Dados (células amarelas)</td><td>Lançamento › campos de VD, VET e Operação</td></tr>
+        <tr><td>Total pendente e carros pendentes</td><td>Calculados: programado − realizado</td></tr>
+        <tr><td>Aba ABSENTEÍSMO</td><td>Lançamento › Absenteísmo do turno (função vem da aba Equipe)</td></tr>
+        <tr><td>Painel_Status</td><td>Painel (3 páginas para o WhatsApp)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="ap-h">Onde os dados ficam guardados</h3>
+  <p class="p">Lançamentos, relatórios e o cadastro da equipe ficam salvos neste navegador, separados por data e turno. Outro computador ou celular não enxerga esses dados. Limpar os dados do navegador apaga o histórico.</p>
+</div></div></div>
+</main>
+
+<footer class="pfoot"><span>Passagem de turno · Estab. 40</span><button type="button" class="linkbtn" id="btnApoio">Apoio</button></footer>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
