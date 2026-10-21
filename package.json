@@ -1,0 +1,26 @@
+{
+  "name": "passagem-turno",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:arquivo": "vite build --mode arquivo",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource/fira-sans": "5.0.19",
+    "@fontsource/fira-sans-condensed": "5.0.13",
+    "@fontsource/sora": "5.0.18",
+    "html2canvas": "1.4.1",
+    "xlsx": "0.18.5"
+  },
+  "devDependencies": {
+    "vite": "5.4.11",
+    "vite-plugin-singlefile": "^2.0.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
