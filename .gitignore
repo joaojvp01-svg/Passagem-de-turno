@@ -1,9 +1,0 @@
-node_modules
-dist
-.vercel
-.DS_Store
-*.log
-# planilhas com dados da operação não vão para o repositório
-*.xlsx
-*.xls
-*.csv
