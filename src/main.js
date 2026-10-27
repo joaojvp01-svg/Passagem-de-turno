@@ -13,7 +13,7 @@ import PUP from "./assets/pet-filhote.png";
 import DUO from "./assets/pet-dupla.png";
 import { MIME, baixarArquivo, entregar, imagemDe } from "./compartilhar.js";
 import { sincronizar, aoMudarRemoto, aoMudarStatus, definirDia } from "./nuvem.js";
-import { recarregarPlan } from "./planejamento.js";
+import { recarregarPlan, imagemPlan } from "./planejamento.js";
 
 const fmt = (n,d=0)=> n==null||isNaN(n) ? "—" : n.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
 const t = kg => fmt(kg/1000,1);
@@ -217,16 +217,18 @@ function renderShot(){
   fitShot();
 }
 function fitShot(){
-  [1,2,3].forEach(n=>{ const st=$("st"+n), w=st.clientWidth; if(!w) return;
+  [1,2,3,4].forEach(n=>{ const st=$("st"+n), w=st.clientWidth; if(!w) return;
     const sc=Math.min(1.25,w/800); $("fit"+n).style.transform=`scale(${sc})`; st.style.height=($("pg"+n).offsetHeight*sc+2)+"px"; });
 }
-window.addEventListener("resize",fitShot);
+window.addEventListener("resize",fitShot); window.addEventListener("pg4",fitShot);
 
 const shotBlob = id => imagemDe($(id));
 async function saveShot(pages){
   const msg=$("saveMsg"); msg.className="save-msg"; msg.textContent="Gerando imagens…";
   const arquivos=[];
-  try{ for(const n of pages) arquivos.push({nome:`status-${turno}T-${dataISO()}-p${n}.png`, blob: await shotBlob("pg"+n)}); }
+  const pl = imagemPlan(); pages = pages.filter(n=>n!==4 || pl);
+  if(!pages.length){ msg.textContent="Nenhum planejamento salvo para enviar."; return; }
+  try{ for(const n of pages) arquivos.push({nome: n===4 ? `planejamento-vd-${pl.iso}.png` : `status-${turno}T-${dataISO()}-p${n}.png`, blob: await shotBlob("pg"+n)}); }
   catch(e){ msg.textContent="Não consegui gerar as imagens. Tente de novo ou tire um print das páginas."; return; }
   const r = await entregar(arquivos, `Status ${turno}º turno · ${dataBR({day:"2-digit",month:"2-digit"})}`);
   if(r==="cancelado"){ msg.textContent="Envio cancelado."; return; }
@@ -717,10 +719,11 @@ $("dataTurno").value=hojeISO();
 $("dataTurno").addEventListener("change",()=>{ if(!$("dataTurno").value) $("dataTurno").value=hojeISO(); setData(); });
 $("turnoSeg").addEventListener("click",e=>{ const b=e.target.closest("button[data-t]"); if(b && b.dataset.t!==turno) setTurno(b.dataset.t); });
 $("obsTxt").addEventListener("input",()=>{ S[turno].obs=$("obsTxt").value; renderShot(); salvarDia(); });
-$("btnSaveAll").addEventListener("click",()=>saveShot([1,2,3]));
+$("btnSaveAll").addEventListener("click",()=>saveShot([1,2,3,4]));
 $("btnSave1").addEventListener("click",()=>saveShot([1]));
 $("btnSave2").addEventListener("click",()=>saveShot([2]));
 $("btnSave3").addEventListener("click",()=>saveShot([3]));
+$("btnSave4").addEventListener("click",()=>saveShot([4]));
 $("logoTopo").src=LOGO_O;
 buildForm(); renderEquipe(); definirDia(dataISO); setData();
 // dados lançados em outro aparelho

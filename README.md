@@ -50,7 +50,7 @@ npm run preview  # testa a pasta dist
 2. **Equipe** (uma vez, ou quando o quadro mudar): importe a planilha com Nome, Função e Turno. O botão *Baixar modelo* gera o arquivo no formato certo.
 3. **Relatórios:** suba a Movimentação de Estoque, o Relatório de Separação e a Conferência, cada um no seu campo.
 4. **Lançamento:** registre as ausências, preencha os campos manuais e as observações.
-5. **Painel:** confira os pontos de atenção e toque em *Enviar as 3 páginas*. No celular abre o compartilhamento (WhatsApp); no computador, baixa as imagens.
+5. **Painel:** confira os pontos de atenção e toque em *Enviar todas as páginas* (inclui a imagem do Planejamento VD, quando houver planejamento salvo). No celular abre o compartilhamento (WhatsApp); no computador, baixa as imagens.
 
 ## Relatórios: três envios separados
 

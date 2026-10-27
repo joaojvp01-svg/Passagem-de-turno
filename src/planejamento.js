@@ -299,7 +299,7 @@ function renderHist() {
 // ---------- imagem para o WhatsApp ----------
 function renderImagem(p, r, ant, ra) {
   const pg = $("plPg");
-  if (!p || !r) { pg.innerHTML = ""; return; }
+  if (!p || !r) { pg.innerHTML = ""; copiarParaPainel(); return; }
   const now = new Date();
   const bloco = (rr, pl, rot) => rr
     ? `<div class="x-sec"><div class="x-band"><b>${rot}</b><span class="x-tag ${rr.g["Pendente"][0] ? "warn" : "ok"}">${diaTxt(pl.iso, { weekday: "short", day: "2-digit", month: "2-digit" })}</span></div>${barraDemanda(rr)}${tabelaResumo(rr, true)}</div>`
@@ -307,8 +307,16 @@ function renderImagem(p, r, ant, ra) {
   pg.innerHTML = `<div class="x-h"><img class="lg" src="${LOGO_W}" alt="PremieRpet"><div class="t">PLANEJAMENTO VD</div><div class="d">Planejamento operacional · status de ${query ? hora(query.em) : "—"} · Estab. 40</div><div class="sw"></div><img class="pets" src="${DUO}" alt=""></div>
     <div class="x-b pl-foto">${bloco(r, p, "ENTREGAS DO DIA")}</div>
     <div class="x-f"><b>Planejamento VD · ${diaTxt(p.iso, { day: "2-digit", month: "2-digit" })}</b><span>Gerado em ${now.toLocaleDateString("pt-BR")} às ${now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span></div>`;
-  ajustar();
+  ajustar(); copiarParaPainel();
 }
+// a mesma imagem aparece no Painel (tela inicial), junto com as páginas do turno
+function copiarParaPainel() {
+  const p4 = $("pg4"); if (!p4) return;
+  const tem = !!$("plPg").innerHTML.trim();
+  p4.innerHTML = $("plPg").innerHTML; $("st4").hidden = !tem; $("pg4Vazio").hidden = tem; $("btnSave4").disabled = !tem;
+  window.dispatchEvent(new Event("pg4"));
+}
+export const imagemPlan = () => ($("pg4") && $("pg4").innerHTML.trim() ? { iso: selIso, rotulo: diaTxt(selIso, { day: "2-digit", month: "2-digit" }) } : null);
 function ajustar() { const st = $("plSt"), w = st.clientWidth; if (!w) return; const sc = Math.min(1.25, w / 800); $("plFit").style.transform = `scale(${sc})`; st.style.height = $("plPg").offsetHeight * sc + 2 + "px"; }
 window.addEventListener("resize", ajustar);
 

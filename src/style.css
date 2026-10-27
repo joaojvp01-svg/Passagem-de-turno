@@ -413,3 +413,4 @@ code{font-size:13px;background:var(--surface-2);padding:1px 5px;border-radius:3p
 .nuvem[data-m="local"]::before{background:#c9c2bb}
 .pl-res-t tr[style*="--tom"] td{background:var(--tom)}
 .pg .pl-res-t tr[style*="--tom"] td{background:var(--tomf)}
+.pg-vazio{border:1px dashed var(--line);border-radius:14px;padding:22px 18px;color:var(--muted);background:var(--surface);font-size:14px}

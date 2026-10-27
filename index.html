@@ -38,10 +38,11 @@
 <!-- ================= PAINEL: o que vai para o WhatsApp ================= -->
 <section id="v-painel" role="tabpanel" aria-labelledby="t-painel">
   <div class="foto-bar">
-    <button class="btn" type="button" id="btnSaveAll">Enviar as 3 páginas</button>
+    <button class="btn" type="button" id="btnSaveAll">Enviar todas as páginas</button>
     <button class="btn alt" type="button" id="btnSave1">Página 1</button>
     <button class="btn alt" type="button" id="btnSave2">Página 2</button>
     <button class="btn alt" type="button" id="btnSave3">Página 3</button>
+    <button class="btn alt" type="button" id="btnSave4">Planejamento VD</button>
     <span class="save-msg" id="saveMsg">No celular, abre o compartilhamento (WhatsApp). No computador, baixa as imagens.</span>
   </div>
   <div id="exemplo"></div>
@@ -49,6 +50,7 @@
   <div class="pg-wrap"><span class="pg-cap">Página 1 · VD e VET</span><div class="pg-stage" id="st1"><div class="pg-fit" id="fit1"><div class="pg" id="pg1"></div></div></div></div>
   <div class="pg-wrap"><span class="pg-cap">Página 2 · Operação, absenteísmo e observações</span><div class="pg-stage" id="st2"><div class="pg-fit" id="fit2"><div class="pg" id="pg2"></div></div></div></div>
   <div class="pg-wrap"><span class="pg-cap">Página 3 · Produtividade</span><div class="pg-stage" id="st3"><div class="pg-fit" id="fit3"><div class="pg" id="pg3"></div></div></div></div>
+  <div class="pg-wrap"><span class="pg-cap">Planejamento VD · entregas do dia</span><div class="pg-vazio" id="pg4Vazio" hidden>Nenhum planejamento salvo. Suba os arquivos na aba <b>Planejamento VD</b> para esta imagem aparecer aqui.</div><div class="pg-stage" id="st4"><div class="pg-fit" id="fit4"><div class="pg" id="pg4"></div></div></div></div>
 </section>
 
 <!-- ================= LANÇAMENTO ================= -->
@@ -220,7 +222,7 @@
     <li><b>Topo:</b> escolha o turno e confira a data.</li>
     <li><b>Relatórios:</b> suba a Movimentação de Estoque, o Relatório de Separação e a Conferência, cada um no seu campo. Se o relatório trouxer o mês inteiro, entra só o dia escolhido no topo.</li>
     <li><b>Lançamento:</b> registre as ausências e preencha os campos manuais. Escreva os recados nas observações.</li>
-    <li><b>Painel:</b> revise os pontos de atenção e toque em “Enviar as 3 páginas”.</li>
+    <li><b>Painel:</b> revise os pontos de atenção e toque em “Enviar todas as páginas” (vai junto a imagem do Planejamento VD, se houver).</li>
     <li><b>Planejamento VD:</b> suba a Pedidos Query do fim do turno (e o planejamento e o faturamento quando mudarem) e toque em “Enviar resumo”.</li>
   </ol>
   <h3 class="ap-h">Onde ficou cada controle da planilha antiga</h3>
@@ -233,7 +235,7 @@
         <tr><td>Base_de_Dados (células amarelas)</td><td>Lançamento › campos de VD, VET e Operação</td></tr>
         <tr><td>Total pendente e carros pendentes</td><td>Calculados: programado − realizado</td></tr>
         <tr><td>Aba ABSENTEÍSMO</td><td>Lançamento › Absenteísmo do turno, com início e quantidade de dias; férias e afastamento ficam numa lista à parte (função vem da aba Equipe)</td></tr>
-        <tr><td>Painel_Status</td><td>Painel (3 páginas para o WhatsApp)</td></tr>
+        <tr><td>Painel_Status</td><td>Painel (3 páginas do turno + imagem do Planejamento VD)</td></tr>
         <tr><td>Acompanhamento de produção · RESUMO COMPLETO e RESUMO DIA ANTERIOR</td><td>Planejamento VD (sobe planejamento, faturamento e Pedidos Query; pedido que saiu da Query conta como Conferido)</td></tr>
       </tbody>
     </table>
