@@ -12,7 +12,8 @@ import LOGO_W from "./assets/logo-branco.png";
 import PUP from "./assets/pet-filhote.png";
 import DUO from "./assets/pet-dupla.png";
 import { MIME, baixarArquivo, entregar, imagemDe } from "./compartilhar.js";
-import "./planejamento.js";
+import { sincronizar, aoMudarRemoto, aoMudarStatus, definirDia } from "./nuvem.js";
+import { recarregarPlan } from "./planejamento.js";
 
 const fmt = (n,d=0)=> n==null||isNaN(n) ? "—" : n.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
 const t = kg => fmt(kg/1000,1);
@@ -258,7 +259,7 @@ function setTurno(tn){
   $("turnoLbl").textContent=`${tn}º turno`;
   vincular(); fillAbsNome(); render();
 }
-function setData(){ S=carregarDia(dataISO()); vincular(); fillAbsNome(); render(); }
+function setData(){ S=carregarDia(dataISO()); vincular(); fillAbsNome(); render(); sincronizar(dataISO()); }
 
 // ---------- exemplo com dados fictícios (para conhecer o site antes de usar de verdade) ----------
 const KEX="passagemTurno.exemplo";
@@ -721,4 +722,15 @@ $("btnSave1").addEventListener("click",()=>saveShot([1]));
 $("btnSave2").addEventListener("click",()=>saveShot([2]));
 $("btnSave3").addEventListener("click",()=>saveShot([3]));
 $("logoTopo").src=LOGO_O;
-buildForm(); renderEquipe(); setData();
+buildForm(); renderEquipe(); definirDia(dataISO); setData();
+// dados lançados em outro aparelho
+aoMudarRemoto(rks=>{
+  if(rks.includes("equipe")) { try{ const v=JSON.parse(localStorage.getItem(LSK)||"null"); if(Array.isArray(v)) equipe=v; }catch(e){} renderEquipe(); }
+  if(rks.includes("logins")) { try{ logins=JSON.parse(localStorage.getItem(KLOG)||"{}")||{}; }catch(e){} }
+  if(rks.includes("afast")) { try{ afast=JSON.parse(localStorage.getItem(KAF)||"[]"); }catch(e){} }
+  if(rks.some(k=>k.startsWith("plan."))) recarregarPlan();
+  const doDia = rks.some(k=>k.startsWith("dia."+dataISO()+"."));
+  if(doDia) S=carregarDia(dataISO());
+  if(doDia || rks.some(k=>/^(equipe|afast|logins)$/.test(k))){ const foco=document.activeElement; vincular(); fillAbsNome(); render(); if(foco && foco.isConnected) try{ foco.focus(); }catch(e){} }
+});
+aoMudarStatus((m,txt)=>{ const el=$("nuvemSt"); if(!el) return; el.textContent=txt; el.dataset.m=m; el.title = m==="local" ? "Neste endereço não há banco compartilhado: o que for lançado fica só neste navegador." : ""; });

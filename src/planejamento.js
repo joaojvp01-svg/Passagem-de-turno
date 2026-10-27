@@ -201,7 +201,13 @@ const anteriorDe = (iso) => Object.keys(planos).filter((k) => k < iso).sort().po
 
 // ---------- telas ----------
 function tabelaResumo(r, compacta) {
-  const linha = (nome, [n, kg], cls = "", cor) => `<tr class="${cls}"><td class="l">${cor ? `<i class="pl-dot" style="background:${cor}"></i>` : ""}${nome}</td><td><span class="n">${fmt(n)}</span></td><td><span class="n">${fmt(kg, 2)}</span></td><td><span class="n">${pct(kg, r.kg)}</span></td></tr>`;
+  // linha tingida com a cor do status (rgba, porque o html2canvas da foto não entende color-mix)
+  // na foto vai a versão opaca (misturada com branco) para não aparecer emenda entre as células
+  const rgb = (hex) => { const h = hex.replace("#", ""); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)); };
+  const tom = (hex, a) => `rgba(${rgb(hex).join(",")},${a})`;
+  const tomF = (hex, a) => `rgb(${rgb(hex).map((c) => Math.round(255 - (255 - c) * a)).join(",")})`;
+  const alfa = (cls) => (cls === "grp" ? 0.2 : cls === "zero" ? 0.06 : 0.14);
+  const linha = (nome, [n, kg], cls = "", cor) => `<tr class="${cls}"${cor ? ` style="--tom:${tom(cor, alfa(cls))};--tomf:${tomF(cor, alfa(cls))}"` : ""}><td class="l">${cor ? `<i class="pl-dot" style="background:${cor}"></i>` : ""}${nome}</td><td><span class="n">${fmt(n)}</span></td><td><span class="n">${fmt(kg, 2)}</span></td><td><span class="n">${pct(kg, r.kg)}</span></td></tr>`;
   const extra = ["Outros", "Sem status"].filter((s) => r.st[s][0]);
   return `<table class="pl-res-t${compacta ? " pl-c" : ""}"><thead><tr><th class="l"></th><th>Qtde Ped.</th><th>Peso (kg)</th><th>Porcentual</th></tr></thead><tbody>
     ${STATUS.map((s) => linha(s, r.st[s], r.st[s][0] ? "" : "zero", COR[s])).join("")}
@@ -328,3 +334,10 @@ $("plEnviar").addEventListener("click", enviar);
 $("t-plan").addEventListener("click", () => setTimeout(ajustar, 0));
 
 render();
+
+// chamado quando outro aparelho atualizou o planejamento
+export function recarregarPlan() {
+  planos = ler(KP, {}); query = ler(KQ, null); historico = ler(KH, []); fatMeta = ler(KF, null);
+  if (selIso && !planos[selIso]) selIso = null;
+  render();
+}

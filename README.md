@@ -21,8 +21,12 @@ Feito com [Vite](https://vitejs.dev) (HTML, CSS e JavaScript, sem framework). N�
    - Framework: Vite
    - Build command: `npm run build`
    - Output directory: `dist`
-   - Não precisa de variáveis de ambiente.
-3. A cada `git push` na branch `main`, a Vercel publica a nova versão sozinha.
+3. **Banco compartilhado (Upstash Redis)** — sem ele, cada navegador guarda só os próprios dados:
+   - No projeto da Vercel: *Storage › Connect Database* (ou *Marketplace › Upstash › Redis*). Pode ser um banco novo ou o mesmo já usado em outro projeto: as chaves deste site começam com `passagem:`.
+   - Ao conectar, a Vercel cria sozinha `KV_REST_API_URL` e `KV_REST_API_TOKEN` (ou `UPSTASH_REDIS_REST_URL` e `UPSTASH_REDIS_REST_TOKEN`). Os dois pares funcionam.
+   - Opcional: em *Settings › Environment Variables*, crie `CODIGO_ACESSO` com uma senha simples. O site pede essa senha uma vez em cada aparelho.
+   - Depois de conectar, faça um *Redeploy*. No rodapé do site deve aparecer **"Salvo para toda a equipe"**.
+4. A cada `git push` na branch `main`, a Vercel publica a nova versão sozinha.
 
 ## Ver sem instalar nada
 
@@ -79,11 +83,11 @@ Como a Pedidos Query ainda não tem modelo fechado, a leitura procura as colunas
 
 ## Onde ficam os dados
 
-- Lançamentos, relatórios e ausências ficam salvos **no navegador de quem usa**, separados por data e turno. O cadastro da equipe também.
-- Outro computador ou celular não enxerga esses dados, e limpar os dados do navegador apaga o histórico.
+- **No site da Vercel com o banco ligado:** lançamentos, relatórios, ausências, equipe e planejamento ficam no Upstash (`api/dados.js`) e aparecem em qualquer computador ou celular. Cada dia é gravado por turno, para dois turnos lançando ao mesmo tempo não apagarem um ao outro.
+- O navegador guarda uma cópia de trabalho: sem internet o site continua funcionando e envia tudo quando a conexão volta. Os outros aparelhos buscam as novidades ao abrir o site, ao voltar para a aba e a cada minuto.
+- O rodapé mostra a situação: *Salvo para toda a equipe*, *Sem conexão* ou *Salvo só neste navegador* (arquivo HTML, artefato ou site sem banco).
+- O arquivo de faturamento não sobe para o banco (é grande); ele já fica aplicado no planejamento salvo.
 - Nenhum nome de colaborador fica no código. Por isso o repositório não guarda dados da operação (o `.gitignore` também bloqueia `.xlsx` e `.csv`).
-
-Para todos usarem os mesmos dados, o próximo passo é ligar o site a um banco (ex.: Supabase ou Vercel Postgres).
 
 ## Regras de cálculo
 
@@ -101,6 +105,8 @@ Para todos usarem os mesmos dados, o próximo passo é ligar o site a um banco (
 ```
 index.html          telas (Painel, Lançamento, Relatórios, Equipe, Apoio)
 src/main.js         lógica: cálculos, leitura de planilhas, geração das imagens
+src/nuvem.js        sincronização com o banco compartilhado
+api/dados.js        função da Vercel que lê e grava no Upstash Redis
 src/style.css       visual
 src/assets/         logo e fotos dos pets
 public/             favicon e robots.txt (site fora do Google)
