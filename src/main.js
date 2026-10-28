@@ -599,8 +599,20 @@ const TLBL={"1":"1º turno","2":"2º turno","3":"3º turno","":"Sem turno"};
 const normTurno = v => { const m=String(v??"").match(/[123]/); if(m) return m[0]; const t=String(v??"").toLowerCase(); if(/prim/.test(t)) return "1"; if(/seg/.test(t)) return "2"; if(/terc/.test(t)) return "3"; return ""; };
 const esc = x => String(x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function eqChanged(){ saveEq(); fillAbsNome(); renderEquipe(); render(); }
+// zerar o cadastro: é preciso importar a planilha de novo
+let eqUndo=null;
+$("eqZerar").addEventListener("click",()=>{
+  const zb=$("eqZerar");
+  if(!zb.classList.contains("sure")){ zb.classList.add("sure"); zb.textContent=`Confirmar: apagar os ${equipe.length} colaboradores`; return; }
+  zb.classList.remove("sure"); zb.textContent="Zerar cadastro";
+  eqUndo=equipe.map(e=>[...e]); equipe=[]; eqChanged();
+  $("impPrev").innerHTML=`<div class="prev"><span class="ok-msg">Cadastro zerado. Importe a planilha da equipe de novo.</span><span><button class="linkbtn" type="button" id="eqDesf">Desfazer</button></span></div>`;
+});
+document.addEventListener("click",e=>{ const zb=$("eqZerar"); if(zb.classList.contains("sure") && e.target!==zb){ zb.classList.remove("sure"); zb.textContent="Zerar cadastro"; } });
+$("impPrev").addEventListener("click",e=>{ if(e.target.id!=="eqDesf"||!eqUndo) return; equipe=eqUndo; eqUndo=null; eqChanged(); $("impPrev").innerHTML=`<div class="prev"><span class="sub">Zerar desfeito.</span></div>`; });
 
 function renderEquipe(){
+  $("eqZerar").disabled = !equipe.length;
   const cnt={"1":0,"2":0,"3":0,"":0}; equipe.forEach(e=>cnt[e[2]||""]++);
   const cards=[["todos","Todos",equipe.length,"colaboradores"],["1","1º turno",cnt["1"],"colaboradores"],["2","2º turno",cnt["2"],"colaboradores"],["3","3º turno",cnt["3"],"colaboradores"],["sem","Sem turno",cnt[""],cnt[""]?"defina o turno":"todos com turno"]];
   $("eqTurnos").innerHTML = cards.map(([k,l,n,sub])=>`<button type="button" class="eq-t ${k==="sem"&&n?"warn":""}" data-f="${k}" aria-pressed="${eqFiltro===k}"><span class="lbl">${l}</span><span class="v num">${n}</span><span class="sub">${sub}</span></button>`).join("");

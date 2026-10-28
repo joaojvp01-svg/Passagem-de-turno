@@ -232,7 +232,7 @@ function render() {
   const isos = Object.keys(planos).sort().reverse();
   if (!selIso || !planos[selIso]) selIso = isos[0] || null;
   $("plData").innerHTML = isos.length ? isos.map((k) => `<option value="${k}" ${k === selIso ? "selected" : ""}>${diaTxt(k)}</option>`).join("") : `<option>Nenhum planejamento</option>`;
-  $("plData").disabled = !isos.length; $("plEnviar").disabled = !selIso;
+  $("plData").disabled = !isos.length; $("plEnviar").disabled = !selIso; $("plZerar").disabled = !selIso && !query && !fatMeta;
 
   // fontes carregadas
   const p = selIso && planos[selIso];
@@ -339,6 +339,30 @@ $("plData").addEventListener("change", (e) => { selIso = e.target.value; render(
 $("plFiltro").addEventListener("click", (e) => { const b = e.target.closest("[data-f]"); if (b) { filtro = b.dataset.f; renderPedidos(planos[selIso]); } });
 $("plBusca").addEventListener("input", () => renderPedidos(planos[selIso]));
 $("plEnviar").addEventListener("click", enviar);
+
+// zerar: tira o planejamento do dia escolhido, a Pedidos Query e o faturamento; é preciso subir de novo
+let plUndo = null;
+const zb = $("plZerar"), ZTXT = "Zerar planejamento";
+zb.addEventListener("click", () => {
+  if (!zb.classList.contains("sure")) { zb.classList.add("sure"); zb.textContent = `Confirmar: zerar ${selIso ? diaTxt(selIso, { day: "2-digit", month: "2-digit" }) : ""} e a Query`; return; }
+  zb.classList.remove("sure"); zb.textContent = ZTXT;
+  plUndo = { iso: selIso, plano: selIso ? planos[selIso] : null, query, fatMeta, fat };
+  if (selIso) delete planos[selIso];
+  query = null; fatMeta = null; fat = null;
+  gravar(KP, planos); gravar(KQ, null); gravar(KF, null);
+  const dia = plUndo.iso ? diaTxt(plUndo.iso, { day: "2-digit", month: "2-digit" }) : "";
+  selIso = null; render();
+  $("plStatus").innerHTML = `<div class="prev"><span class="ok-msg">Zerado: ${dia ? `planejamento de ${dia}, ` : ""}Pedidos Query e faturamento. Suba os arquivos de novo para ver o resumo.</span><span><button class="linkbtn" type="button" id="plDesf">Desfazer</button></span></div>`;
+});
+document.addEventListener("click", (e) => { if (zb.classList.contains("sure") && e.target !== zb) { zb.classList.remove("sure"); zb.textContent = ZTXT; } });
+$("plStatus").addEventListener("click", (e) => {
+  if (e.target.id !== "plDesf" || !plUndo) return;
+  const u = plUndo; plUndo = null;
+  if (u.iso && u.plano) planos[u.iso] = u.plano;
+  query = u.query; fatMeta = u.fatMeta; fat = u.fat; selIso = u.iso;
+  gravar(KP, planos); gravar(KQ, query); gravar(KF, fatMeta);
+  $("plStatus").innerHTML = `<div class="prev"><span class="sub">Zerar desfeito.</span></div>`; render();
+});
 $("t-plan").addEventListener("click", () => setTimeout(ajustar, 0));
 
 render();
